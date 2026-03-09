@@ -3,114 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Song Point Generator</title>
+    <title>Song Game - Premium UI</title>
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { margin: 0; display: flex; height: 100vh; background-color: #f4f7f6; }
+        :root {
+            --primary: #6c5ce7;
+            --accent: #00b894;
+            --bg: #f0f2f5;
+            --dark: #2d3436;
+            --text-muted: #636e72;
+            --card-bg: #ffffff;
+        }
 
-        /* LEFT SIDE */
+        * { box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        
+        body { 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            background-color: var(--bg); 
+            overflow: hidden; 
+        }
+
+        /* LEFT PANEL */
         .left-panel {
-            flex: 0 0 40%;
+            flex: 0 0 380px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
             background: white;
-            border-right: 2px solid #e0e0e0;
-            padding: 30px;
+            border-right: 1px solid #e0e0e0;
+            padding: 0; /* Handled by internal sections */
+        }
+
+        .controls-header {
+            padding: 30px 25px 20px 25px;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
             text-align: center;
         }
 
-        .input-box { margin-bottom: 20px; }
-        input {
+        .controls-body { padding: 20px 25px; }
+
+        .input-box input {
             width: 80px;
-            padding: 10px;
+            padding: 12px;
             font-size: 1.2rem;
-            border: 2px solid #2d3436;
-            border-radius: 5px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
             text-align: center;
+            transition: border-color 0.3s;
         }
+        .input-box input:focus { border-color: var(--primary); outline: none; }
 
-        audio { width: 100%; max-width: 300px; margin: 20px 0; }
+        audio { width: 100%; margin: 20px 0; border-radius: 50px; }
 
-        button {
-            padding: 10px 20px;
-            background: #00b894;
+        .btn-main {
+            padding: 14px;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
+            width: 100%;
+            transition: transform 0.2s, background 0.2s;
         }
-        button:hover { background: #00a884; }
+        .btn-main:hover { background: #5a4bcf; transform: translateY(-1px); }
 
-        /* RIGHT SIDE */
-        .right-panel { flex: 1; padding: 40px; overflow-y: auto; }
-        #resultsGrid {
+        /* HISTORY AREA */
+        .history-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fdfdfd;
+            border-top: 1px solid #eee;
+            overflow: hidden;
+        }
+
+        .history-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        #historyList {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px 25px;
+            scrollbar-width: thin;
+        }
+
+        /* The History Card */
+        .history-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #f0f0f0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+        }
+        .history-card:hover { transform: scale(1.02); border-color: var(--primary); }
+
+        .history-card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .history-song-name { font-weight: 700; color: var(--dark); font-size: 0.95rem; }
+        .history-time { font-size: 0.75rem; color: var(--text-muted); }
+
+        .history-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .point-pill {
+            background: #f1f2f6;
+            color: var(--dark);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* RIGHT PANEL */
+        .right-panel { flex: 1; padding: 50px; overflow-y: auto; }
+
+        .results-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 20px;
         }
 
         .point-item {
-            background: #2d3436;
-            color: #fab1a0;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: bold;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            animation: popIn 0.3s ease forwards;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--dark);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-bottom: 4px solid var(--accent);
         }
 
-        @keyframes popIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+        .clear-btn {
+            background: none;
+            border: 1px solid #ff7675;
+            color: #ff7675;
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 5px;
+            cursor: pointer;
         }
+        .clear-btn:hover { background: #ff7675; color: white; }
+
+        .disclaimer { padding: 15px; font-size: 0.7rem; color: #b2bec3; text-align: center; border-top: 1px solid #eee; }
     </style>
 </head>
 <body>
 
     <div class="left-panel">
-        <h2>Song Game</h2>
+        <div class="controls-header">
+            <h2 style="margin: 0; letter-spacing: -1px;">MusicPoints</h2>
+        </div>
         
-        <div class="input-box">
-            <label style="display: block; margin-bottom: 8px;">Enter Number (X):</label>
-            <input type="number" id="inputX" value="10" min="1">
+        <div class="controls-body">
+            <div class="input-box" style="text-align: center; margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">POINTS TO GENERATE (X)</label>
+                <input type="number" id="inputX" value="6" min="1">
+            </div>
+
+            <button class="btn-main" onclick="loadRandomSong()">Play Random Track</button>
+            <p id="songName" style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 12px; font-weight: 500;">Ready to play</p>
+            <audio id="audioPlayer" controls></audio>
         </div>
 
-        <button onclick="loadRandomSong()">Load Random Song</button>
-        
-        <p id="songName" style="margin-top: 10px; font-style: italic; color: #636e72;">No song loaded</p>
+        <div class="history-section">
+            <div class="history-title-bar">
+                <span style="font-weight: 800; font-size: 0.9rem; color: var(--dark);">Recent Sessions</span>
+                <button class="clear-btn" onclick="clearHistory()">Clear All</button>
+            </div>
+            <div id="historyList">
+                </div>
+        </div>
 
-        <audio id="audioPlayer" controls></audio>
-        
-        <!-- <p style="color: #636e72; font-size: 0.8rem;">
-            Song will auto-pause between 30-55s.
-        </p> -->
+        <div class="disclaimer">
+            Disclaimer: I do not own the songs. The credit goes to the owner.
+        </div>
     </div>
 
     <div class="right-panel">
-        <div id="resultsGrid"></div>
+        <h2 style="margin-top: 0; margin-bottom: 30px; font-weight: 800; color: var(--dark);">Current Points</h2>
+        <div id="resultsGrid" class="results-grid"></div>
     </div>
 
     <script>
+        const songFiles = ['track1.mp3', 'track2.mp3', 'track3.mp3']; // Replace with your files
 
         const audio = document.getElementById('audioPlayer');
         const grid = document.getElementById('resultsGrid');
+        const historyList = document.getElementById('historyList');
         const inputX = document.getElementById('inputX');
         const songNameDisplay = document.getElementById('songName');
 
         let stopTime = 0;
-        let hasPausedForThisRound = false;
+        let currentSongName = "";
+        let hasPaused = false;
 
         function loadRandomSong() {
-            // Reset state
-            hasPausedForThisRound = false;
+            hasPaused = false;
             grid.innerHTML = '';
-            
-            // Pick a random song from the list
             const randomSong = Math.floor(Math.random() * 10);
+            currentSongName = randomSong;
+            // Pick a random song from the list
             audio.src = `songs/${randomSong}.mp3`; // Points to your "songs" directory
             songNameDisplay.textContent = `Playing: ${randomSong}`;
 
@@ -121,42 +233,79 @@
             audio.load();
         }
 
-        // Auto-pause logic
-        audio.ontimeupdate = function() {
-            if (!hasPausedForThisRound && audio.currentTime >= stopTime) {
-                hasPausedForThisRound = true; // Prevents infinite pausing loop
+        audio.ontimeupdate = () => {
+            if (!hasPaused && audio.currentTime >= stopTime) {
+                hasPaused = true;
                 audio.pause();
             }
         };
 
-        // Point generation logic (triggers on any pause)
-        audio.onpause = function() {
+        audio.onpause = () => {
             const x = parseInt(inputX.value);
             if (isNaN(x) || x < 1) return;
 
             grid.innerHTML = '';
-            let pointsArray = Array.from({length: x}, (_, i) => i + 1);
-            pointsArray = shuffle(pointsArray);
+            let points = Array.from({length: x}, (_, i) => i + 1);
+            points = shuffle(points);
 
+            let summary = [];
             for (let i = 0; i < x; i++) {
+                const text = `Chair ${i + 1}: ${points[i]} pts`;
+                summary.push(text);
                 const item = document.createElement('div');
                 item.className = 'point-item';
-                item.textContent = `${i + 1}: ${pointsArray[i]} points`;
+                item.textContent = text;
                 grid.appendChild(item);
             }
+
+            saveToHistory(currentSongName, summary);
         };
 
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
+        function saveToHistory(song, results) {
+            const history = JSON.parse(localStorage.getItem('v2_history') || '[]');
+            const entry = {
+                song: song,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                points: results
+            };
+            history.unshift(entry);
+            localStorage.setItem('v2_history', JSON.stringify(history.slice(0, 10)));
+            renderHistory();
         }
 
-        // Initialize with a song on load
-        window.onload = loadRandomSong;
-    </script>
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('v2_history') || '[]');
+            if (history.length === 0) {
+                historyList.innerHTML = `<p style="text-align:center; color:#ccc; font-size:0.8rem; margin-top:20px;">No history yet</p>`;
+                return;
+            }
+            historyList.innerHTML = history.map(item => `
+                <div class="history-card">
+                    <div class="history-card-header">
+                        <span class="history-song-name">${item.song}</span>
+                        <span class="history-time">${item.time}</span>
+                    </div>
+                    <div class="history-pills">
+                        ${item.points.map(p => `<span class="point-pill">${p}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
 
+        function clearHistory() {
+            localStorage.removeItem('v2_history');
+            renderHistory();
+        }
+
+        function shuffle(a) {
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        window.onload = () => { loadRandomSong(); renderHistory(); };
+    </script>
 </body>
 </html>
